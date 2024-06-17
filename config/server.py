@@ -21,7 +21,7 @@ __server_config: Optional[ServerConfig] = None
 
 def set_server_config(config: ServerConfig):
     global __server_config
-    logger.info(f"Setting server config: {config.model_dump()}")
+    logger.info(f"Setting server config: {config.dict()}")
     __server_config = config
 
 

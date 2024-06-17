@@ -26,7 +26,7 @@ __rms_config: Optional[RMSConfig] = None
 
 def set_rms_config(config: RMSConfig):
     global __rms_config
-    logger.info(f"Setting RMS config: {config.model_dump()}")
+    logger.info(f"Setting RMS config: {config.dict()}")
     __rms_config = config
 
 
