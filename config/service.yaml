@@ -1,0 +1,18 @@
+
+server:
+  port: 10001
+  logger:
+    name: "wcs-baffle"
+    level: "info"
+    log_dir: "/home/gort/rms-log"
+
+rms:
+  host: "http://localhost:10001"
+  request:
+    timeout: 15
+    delay: 3
+  apis:
+    dock_ready: "/api/rms/wcs/station_ready"
+    dock_finish: "/api/rms/order-materials/finish"
+#    dock_ready: "/api/rms/demo"
+#    dock_finish: "/api/rms/demo"
