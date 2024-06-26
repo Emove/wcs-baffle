@@ -203,4 +203,4 @@ def __submit_dock_finish_callback(ip: str, serial: str, station: str):
 
 
 def get_url(ip, rms_config: RMSConfig, url: str) -> str:
-    return f"http://{ip}:{rms_config.port}/{url}"
+    return f"http://{ip}:{rms_config.port}{url}"

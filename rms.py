@@ -10,7 +10,7 @@ from config.rms import get_rms_config
 
 
 def submit_delay_callback(delay: int, callback_url: str, callback_params: Dict[str, str]):
-    th = Thread(target=__delay_callback, args=(ip, delay, callback_url, callback_params), daemon=True)
+    th = Thread(target=__delay_callback, args=(delay, callback_url, callback_params), daemon=True)
     th.start()
 
 
@@ -18,7 +18,7 @@ def __delay_callback(delay: int, callback_url: str, callback_params: Dict[str, s
     while True:
         try:
             time.sleep(delay)
-            if __request_rms(ip, callback_url, callback_params):
+            if __request_rms(callback_url, callback_params):
                 return
         except Exception:
             logger.exception(f"delay callback error, delay: {delay}, callback_url: {callback_url}, "
