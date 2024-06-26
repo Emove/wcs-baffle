@@ -1,3 +1,6 @@
+from datetime import datetime
+from threading import Lock
+
 from flask import Flask, request
 from gevent import pywsgi
 
@@ -83,6 +86,11 @@ def material_inbound_finished():
     return {"code": 0, "msg": "料箱入库完成!"}
 
 
+__lock = Lock()
+__is_outbound_ready = True
+__latest_outbound_time = datetime.now()
+
+
 # WCS-PLC出库
 @_wcs.route("/api/wcs/outbound/order_materials/outboundready", methods=["POST"])
 def outbound_workstation():
@@ -91,7 +99,14 @@ def outbound_workstation():
     station_id = data.get("station_id")
     if station_id is None:
         return {"code": 1, "msg": "参数错误: station_id不能为空"}
-    return {"code": 0, "msg": "可执行出库"}
+    with __lock:
+        global __is_outbound_ready
+        if not __is_outbound_ready:
+            global __latest_outbound_time
+            if (datetime.now() - __latest_outbound_time).total_seconds() < 20:
+                return {"code": 1, "msg": "出库接驳站忙碌，请稍后再试"}
+            __is_outbound_ready = True
+        return {"code": 0, "msg": "可执行出库"}
 
 
 @_wcs.route("/api/wcs/outbound/order_materials/outboundstart", methods=["POST"])
@@ -106,6 +121,11 @@ def outbound_start():
         f"outbound_start, order_id: {order_id}, tote_ids: {tote_ids}, station_id: {station_id}, "
         f"serial: {serial}, robot_type: {robot_type}"
     )
+    with __lock:
+        global __is_outbound_ready
+        global __latest_outbound_time
+        __is_outbound_ready = False
+        __latest_outbound_time = datetime.now()
     __submit_dock_finish_callback(serial, station_id)
     return {"code": 0, "msg": "出库执行中"}
 

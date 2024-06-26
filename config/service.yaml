@@ -7,7 +7,7 @@ server:
     log_dir: "/home/gort/rms-log"
 
 rms:
-  host: "http://localhost:10001"
+  host: "http://localhost:8002"
   request:
     timeout: 15
     delay: 3
