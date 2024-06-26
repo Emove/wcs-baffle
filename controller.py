@@ -57,7 +57,7 @@ def inbound_start():
         return {"code": 1, "msg": "参数错误: robot_type不能为空"}
     if station_id is None:
         return {"code": 1, "msg": "参数错误: station_id不能为空"}
-    __submit_dock_finish_callback(serial, station_id)
+    __submit_dock_finish_callback(request.remote_addr, serial, station_id)
     return {"code": 0, "msg": "机器人对接开始"}
 
 
@@ -126,7 +126,7 @@ def outbound_start():
         global __latest_outbound_time
         __is_outbound_ready = False
         __latest_outbound_time = datetime.now()
-    __submit_dock_finish_callback(serial, station_id)
+    __submit_dock_finish_callback(request.remote_addr, serial, station_id)
     return {"code": 0, "msg": "出库执行中"}
 
 
@@ -193,14 +193,14 @@ def __submit_dock_prepare_callback(serial: str, station: str, robot_type: str):
     rms.submit_delay_callback(rms_config.request.delay, get_url(rms_config, rms_config.apis.dock_ready), params)
 
 
-def __submit_dock_finish_callback(serial: str, station: str):
+def __submit_dock_finish_callback(ip: str, serial: str, station: str):
     params = {
         "serial": serial,
         "station_id": station,
     }
     rms_config = get_rms_config()
-    rms.submit_delay_callback(rms_config.request.delay, get_url(rms_config, rms_config.apis.dock_finish), params)
+    rms.submit_delay_callback(rms_config.request.delay, get_url(ip, rms_config, rms_config.apis.dock_finish), params)
 
 
-def get_url(rms_config: RMSConfig, url: str) -> str:
-    return f"{rms_config.host}/{url}"
+def get_url(ip, rms_config: RMSConfig, url: str) -> str:
+    return f"http://{ip}:{rms_config.port}/{url}"

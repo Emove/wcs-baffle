@@ -18,6 +18,7 @@ class RMSApis(BaseModel):
 class RMSConfig(BaseModel):
     request: RequestConfig
     host: str
+    port: int
     apis: RMSApis
 
 
